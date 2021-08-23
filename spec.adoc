@@ -1,5 +1,4 @@
 = A JSON Schema vocabulary for validating automerge documents
-
 :author: @alexjg
 :revdate: 2021-08-23
 :revremark: draft
