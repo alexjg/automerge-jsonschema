@@ -46,7 +46,7 @@ The ID for this vocabulary is https://alexjg.github.io/automerge-jsonschema/spec
 (this document address)
 
 A draft 2020-12 meta schema which validates this vocabulary has ID
-https://alexjg.github.io/automerge-jsonschema/meta-schema (also the document
+https://alexjg.github.io/automerge-jsonschema/meta-schema.json (also the document
 address).
 
 == Type Annotations
@@ -70,7 +70,8 @@ MUST implement, all other core vocabulary keywords MUST NOT be implemented.
 
 The semantics of the `$ref` keyword are as specified in the core vocabulary
 with the additional constraint that any referenced schemas MUST use this
-vocabulary.
+vocabulary. Implementations MUST NOT accept a schema which references schemas
+which use other vocabularies.
 
 ==== Other keywords
 
