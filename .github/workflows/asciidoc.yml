@@ -1,2 +1,10 @@
-- name: asciidoctor-ghpages
-  uses: manoelcampos/asciidoctor-ghpages-action@v2.1.1
+name: asciidoctor-ghpages
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  build: 
+  - name: asciidoctor-ghpages
+    uses: manoelcampos/asciidoctor-ghpages-action@v2
