@@ -66,6 +66,8 @@ MUST be either `"string"` or `"text"`. When validating an instance
 implementations MUST check that the underlying automerge type matches the
 `automerge_type` value and if it does not validation MUST fail.
 
+== Keywords
+
 === Keywords from the core vocabulary
 
 This section specifies keywords from the core vocabulary which implementations
