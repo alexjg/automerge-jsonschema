@@ -1,0 +1,5 @@
+A specification and meta schema for a JSON schema vocabulary which is suitable
+for validating automerge documents.
+
+- ./spec.adoc[spec]
+- ./meta-schema.json[meta schema]
