@@ -1,0 +1,121 @@
+= A JSON Schema vocabulary for validating automerge documents
+
+== Introduction
+
+http://json-schema.org/draft/2020-12/json-schema-core.html[JSON schema core]
+and http://json-schema.org/draft/2020-12/json-schema-validation.html[validation]
+together specify keywords for validating that a JSON document matches a set of 
+predicates. In the context of Automerge - where documents are composed of possibly
+concurrent modifications - some of these keywords are not useful. This document
+specifies a set of keywords which are useful in this context.
+
+== Conventions and Terminology
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in
+http://json-schema.org/draft/2020-12/json-schema-validation.html#RFC2119[RFC 2119].
+
+This document refers to automerge as implemented in
+https://github.com/automerge/automerge/tree/v1.0.1-preview.4
+
+
+== Concurrent Modification
+
+The core premise of automerge is that there is a commutative merge operation
+for any set of automerge documents. Some merges do produce conflicts - there's
+no useful way to allow concurrent assignments to the same key in an object -
+but many edits are merged without conflict. For example, concurrent inserts
+into an array will result in an array containing all the inserted values. This
+is an extremely useful property but it presents problems for JSON schema. A
+property we might want is that if two automerge documents are valid with
+respect to some schema, then their merge is also valid with respect to that
+schema, but consider the `maxContains` keyword, which constrains an array to
+contain no more than some number of values - it is possible to have two
+automerge arrays which contain less than `maxContains` values, but their merge
+contains more than `maxContains`. The `maxContains` keyword does not distribute
+over merges.
+
+This document presents a set of keywords taken from the core and validation
+specs which distribute over the merge operation and therefore can be used to
+validate automerge documents.
+
+== Schema ID and meta schema ID
+
+The ID for this vocabulary is https://alexjg.github.io/automerge-jsonschema/spec
+(this document address)
+
+A draft 2020-12 meta schema which validates this vocabulary has ID
+https://alexjg.github.io/automerge-jsonschema/meta-schema (also the document
+address).
+
+== Type Annotations
+
+Automerge has a richer data model than JSON. Of particular relevance to schemas
+is that there are two types which map to a JSON string. There is a simple
+`string` type which does not perform merges on concurrent modifications, and a
+`text` type which allows for concurrent modification of the characters in the 
+string. Schemas which validate a string instance MAY specify the type of the 
+underlying property with the `automerge_type` annotation, the value of which
+MUST be either `"string"` or `"text"`. When validating an instance
+implementations MUST check that the underlying automerge type matches the
+`automerge_type` value and if it does not validation MUST fail.
+
+=== Keywords from the core vocabulary
+
+This section specifies keywords from the core vocabulary which implementations
+MUST implement, all other core vocabulary keywords MUST NOT be implemented.
+
+==== References 
+
+The semantics of the `$ref` keyword are as specified in the core vocabulary
+with the additional constraint that any referenced schemas MUST use this
+vocabulary.
+
+==== Other keywords
+
+All the keywords from the core vocabulary except the `prefixItems` and `contains`
+keywords are available.
+
+=== Keywords from the validation vocabulary
+
+This section specifies keywords from the validation vocabulary which implementations
+MUST implement all other validation vocabulary keywords MUST NOT be implemented.
+
+We take the following keywords unchanged from the original spec:
+
+- `type`
+- `enum`
+- `const`
+- `multipleOf`
+- `maximum`
+- `exclusiveMaximum`
+- `minimum`
+- `exclusiveMinimum`
+- `required`
+- `dependentRequired`
+ 
+
+==== Keywords for validating strings
+
+Any instance which uses the following keywords for validating strings MUST also
+have `automerge_type: "string"`. Implementations MUST ignore this keyword when
+`automerge_type: "string"` is not present. Implementations MAY emit a 
+warning in this case.
+
+- `maxLength`
+- `minLength`
+- `pattern`
+- `format`
+- `contentEncoding`
+- `contentMediaType`
+- `contentSchema`
+
+
+== Conflicts
+
+Automerge documents may contain conflicts. These conflicts are available as 
+additional values at any given path in the document. For the purposes of this
+document we ignore conflicts, implementations MUST apply validation to the
+deterministic "winning" value (i.e the value with the lowest OpID) at any given
+path. Implementations MUST NOT apply validation to conflicting values.
